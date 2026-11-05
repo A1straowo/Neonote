@@ -1,6 +1,6 @@
 # Neonote
 
-A Flutter note-taking app with components, tags, MomoTalk, and DeepSeek AI integration.
+A quiet place for note, ideas and conversations.
 
 ## Android
 
