@@ -1,0 +1,51 @@
+name: neonote
+description: "Advanced Application with note and momotalk"
+publish_to: 'none'
+
+version: 1.0.1+2002
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  dynamic_color: ^1.9.0
+  font_awesome_flutter: ^11.0.0
+  flutter_localizations:
+    sdk: flutter
+  sqflite: ^2.4.2
+  intl: ^0.20.2
+  provider: ^6.1.5+1
+  device_info_plus: ^13.2.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_colorpicker: ^1.1.0
+  hive_flutter: ^1.1.0
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  http: ^1.6.0
+  image: ^4.12.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/icon/deepseek.png
+
+  fonts:
+    - family: ResourceHanCN
+      fonts:
+        - asset: fonts/ResourceHanCNBold.ttf
+          style: normal
+          weight: 500
+
+flutter_icons:
+  image_path: "assets/icon/app_icon.png"
+  android: true
+  ios: true

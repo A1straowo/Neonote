@@ -1,0 +1,467 @@
+{
+  "@@locale": "en",
+  "note": "Note",
+  "label": "Label",
+  "motalk": "MomoTalk",
+  "settings": "Settings",
+  "general": "General",
+  "language": "Language",
+  "dark_theme": "Dark theme",
+  "the_quick_brown_fox_jumps_over_the_lazy_dog": "The quick brown fox jumps over the lazy dog",
+  "save": "Save",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "title": "Title",
+  "quit": "Save and quit?",
+  "size": "Scale",
+  "normal": "MD3E",
+  "theme": "Theme",
+  "color_scheme": "Color scheme",
+  "default_color_scheme": "Default colors",
+  "optimize_storage": "Optimize storage",
+  "optimize_storage_subtitle": "Remove unused media and compact the local database",
+  "optimize_storage_confirm": "Remove unreferenced media files, old export copies, and compact the database? Notes are kept.",
+  "optimize_storage_done": "Released {size}",
+  "@optimize_storage_done": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "message_student": "Student",
+  "message_teacher": "Teacher",
+  "message": "Message",
+  "custom": "Custom",
+  "character": "Student",
+  "clear_failed": "Clear failed!",
+  "clear_config": "Clear config",
+  "clear_cache": "Clear cache",
+  "auto_save": "Autosave",
+  "dialog": "Dialog",
+  "font": "Font",
+  "radius": "Radius",
+  "settings_saved": "Settings saved!",
+  "apply": "Apply changes",
+  "restore_defaults": "Restore defaults",
+  "restore_confirm": "Restore all settings to default?",
+  "defaults_restored": "Defaults restored",
+  "show_student_surname": "Show student surname",
+  "reverse_name": "Reverse name",
+  "student_name_language": "Student name language",
+  "language_chinese": "Chinese",
+  "language_japanese": "Japanese",
+  "language_english": "English",
+  "language_korean": "Korean",
+  "language_spanish": "Spanish",
+  "language_russian": "Russian",
+  "remark": "Remark",
+  "teacher_avatar": "Teacher avatar",
+  "custom_student": "Custom student",
+  "custom_greeting": "Custom greeting",
+  "interface": "Interface",
+  "gesture": "Gesture",
+  "storage": "Storage",
+  "about": "About",
+  "archive_swipe": "Archive (swipe right)",
+  "delete_swipe": "Delete (swipe left)",
+  "select_student": "Select student",
+  "built_in": "Built-in",
+  "add_custom_student": "Add custom student",
+  "id": "ID",
+  "student_name": "Name",
+  "no_custom_students": "No custom students",
+  "delete": "Delete",
+  "retry": "Retry",
+  "component_text": "Text",
+  "component_checklist": "Checklist",
+  "component_drawing": "Drawing",
+  "component_image": "Image",
+  "component_audio": "Audio",
+  "component_delete": "Delete component",
+  "component_added": "{name} component added",
+  "@component_added": {
+    "description": "snackbar after a component was added",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "checklist_add_item": "Add an item",
+  "clear": "Clear",
+  "image_url": "Image URL",
+  "new_group": "New group",
+  "new_chat": "New chat",
+  "group_create": "Create group",
+  "group_added": "Group “{name}” added",
+  "@group_added": {
+    "description": "snackbar after a group was added",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_added": "Chat “{name}” added",
+  "@chat_added": {
+    "description": "snackbar after a chat was added",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "group_delete_confirm": "Delete the group “{name}” and all of its chats?",
+  "@group_delete_confirm": {
+    "description": "delete group confirmation",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_delete_confirm": "Delete the chat with “{name}”?",
+  "@chat_delete_confirm": {
+    "description": "delete chat confirmation",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "input_name_hint": "Enter a name…",
+  "name_required": "The name cannot be empty",
+  "add": "Add",
+  "rename": "Rename",
+  "default_group": "Default group",
+  "no_chats_in_group": "No chats yet",
+  "no_messages": "No messages yet",
+  "message_hint": "Type a message…",
+  "send": "Send",
+  "tag_create": "Create new label",
+  "tag_added": "Label “{name}” added",
+  "@tag_added": {
+    "description": "snackbar after a label was added",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tag_rename": "Rename label",
+  "tag_delete_confirm": "Delete the label “{name}”?",
+  "@tag_delete_confirm": {
+    "description": "delete label confirmation",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "storage_used": "Storage used",
+  "cache_used": "Cache used",
+  "calculating": "Calculating",
+  "refresh": "Refresh",
+  "clear_cache_confirm": "Clear the cache? Your notes are kept.",
+  "clear_config_confirm": "Clear the configuration? All preferences return to default.",
+  "clear_success": "Cleared",
+  "pick_from_gallery": "Choose from gallery",
+  "image_pick_failed": "Could not open the gallery",
+  "edit_remark": "Edit remark",
+  "remark_hint": "Enter a remark",
+  "edit_greeting": "Edit greeting",
+  "greeting_hint": "Enter a greeting",
+  "recording": "Recording",
+  "record_audio": "Record audio",
+  "play": "Play",
+  "pause": "Pause",
+  "record_failed": "Recording failed",
+  "mic_permission_denied": "Microphone permission is required",
+  "audio_unsupported": "Audio recording is not supported on this platform",
+  "add_image": "Add image",
+  "take_photo": "Take photo",
+  "content_hint": "Note",
+  "deepseek_harness": "DeepSeek",
+  "deepseek_enable": "Enable AI",
+  "deepseek_api_key": "API Key",
+  "deepseek_base_url": "Base URL",
+  "deepseek_model": "Model",
+  "deepseek_system_prompt": "System prompt",
+  "deepseek_test_connection": "Test connection",
+  "deepseek_testing": "Testing",
+  "deepseek_connected": "Connected",
+  "deepseek_connection_failed": "Connection failed",
+  "deepseek_not_configured": "Configure the API key first",
+  "deepseek_saved": "DeepSeek settings saved",
+  "ai_chat": "DeepSeek",
+  "ai_assistant": "DeepSeek",
+  "ai_input_hint": "Ask the AI",
+  "ai_thinking": "Thinking",
+  "ai_typing": "Typing",
+  "ai_error": "AI error",
+  "ai_insert_note": "Insert into notes",
+  "ai_inserted_to_note": "Inserted into notes",
+  "ai_welcome": "Ask me anything. I can also help you write notes.",
+  "deepseek_disabled": "AI is disabled",
+  "ai_new_conversation_title": "New conversation",
+  "ai_wait_reply": "Please wait for the current response",
+  "ai_conversation_created": "New conversation created",
+  "ai_mode_minimal": "Minimal mode",
+  "ai_mode_standard": "Standard mode",
+  "ai_reasoning_low": "Reasoning: low",
+  "ai_reasoning_medium": "Reasoning: medium",
+  "ai_reasoning_high": "Reasoning: high",
+  "close_image_preview": "Close image preview",
+  "close": "Close",
+  "ai_image_added": "Image added. DeepSeek will recognize it after sending.",
+  "stop_recording": "Stop recording",
+  "voice": "Voice",
+  "ai_image_placeholder": "[Image]",
+  "ai_voice_placeholder": "[Voice]",
+  "ai_voice_attached": "[User attached voice]",
+  "ai_new_conversation": "New conversation",
+  "ai_history": "History",
+  "ai_voice_count": "Voice {count}",
+  "ai_recognizing_image": "DeepSeek is recognizing the image…",
+  "ai_empty_conversation": "Empty conversation",
+  "ai_delete_conversation": "Delete conversation",
+  "ai_search_history": "Search conversations",
+  "ai_no_history": "No conversation history",
+  "ai_no_history_match": "No matching conversations",
+  "close_menu": "Close menu",
+  "@ai_voice_count": {
+    "description": "Number of voice attachments",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "note_blank_deleted": "Blank note deleted automatically",
+  "note_discarded": "Note discarded and deleted",
+  "select_sentence_first": "Select a sentence first",
+  "text_color": "Text color",
+  "current_sentence_only": "Applies only to the current sentence",
+  "apply_label": "Apply",
+  "choose_background": "Choose background",
+  "solid_background": "Solid color background",
+  "apply_solid_color": "Apply color",
+  "no_background": "No background",
+  "grid_background": "Grid background",
+  "square_grid": "Square",
+  "dot_grid": "Dots",
+  "horizontal_lines": "Horizontal lines",
+  "image_background": "Image background",
+  "change_image": "Change image",
+  "crop_again": "Crop again",
+  "remove_image_background": "Remove image background",
+  "background_image_missing": "Background image not found",
+  "cannot_read_background": "Could not read background image",
+  "crop_background": "Crop image background",
+  "crop_top": "Top",
+  "crop_middle": "Middle",
+  "crop_bottom": "Bottom",
+  "zoom": "Zoom",
+  "crop_hint": "The image fills the note automatically; crop to adjust the focal area.",
+  "use_original": "Use original",
+  "finish_crop": "Finish crop",
+  "crop_failed": "Crop failed: {error}",
+  "checklist_item_hint": "Checklist item",
+  "insert_checklist_item": "Insert checklist item",
+  "insert_divider": "Insert divider",
+  "insert_current_time": "Insert current time",
+  "body_text": "Body",
+  "bold": "Bold",
+  "italic": "Italic",
+  "underline": "Underline",
+  "strikethrough": "Strikethrough",
+  "align_left": "Align left",
+  "align_center": "Center",
+  "align_right": "Align right",
+  "select_current_sentence": "Select current sentence",
+  "word_count": "{count} characters",
+  "insert_content": "Insert content",
+  "text_format": "Text formatting",
+  "more": "More",
+  "@crop_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@word_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "select_tags": "Select labels",
+  "create_tag_first": "Create a label on the Tags page first",
+  "delete_component_confirm": "Delete this note component?",
+  "no_text_content": "No text content",
+  "no_checklist_items": "No checklist items",
+  "completed_count": "{done} / {total} completed",
+  "unnamed_checklist_item": "Untitled checklist item",
+  "more_items": "{count} more items",
+  "no_drawings": "No drawings",
+  "no_images": "No images",
+  "image_load_failed": "Could not load image",
+  "no_recording": "No recording",
+  "recorded_tap_to_play": "Recorded, tap to play",
+  "note_archive": "Note archive",
+  "no_archived_notes": "No archived notes",
+  "no_text_content_short": "No text content",
+  "restore": "Restore",
+  "momotalk_archive": "MomoTalk archive",
+  "no_archived_chats": "No archived chats",
+  "exit_unsaved_title": "Unsaved changes",
+  "exit_unsaved_message": "Unsaved changes were detected. Save before leaving?",
+  "discard": "Discard",
+  "right_swipe_action": "Right swipe action",
+  "left_swipe_action": "Left swipe action",
+  "gesture_pin": "Pin",
+  "gesture_archive": "Archive",
+  "gesture_mark": "Mark",
+  "@completed_count": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@more_items": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "image_send_failed": "Image send failed: {error}",
+  "gallery_load_failed": "Failed to load the portrait gallery",
+  "gallery_not_found": "No portrait variants found for this student",
+  "portrait_variants": "Portrait variants",
+  "screenshot_failed": "Screenshot failed",
+  "message_reorder": "Reorder",
+  "message_edit": "Edit",
+  "message_transform": "Transform",
+  "transform_developing": "Transform is coming soon",
+  "edit_message": "Edit message",
+  "enter_new_message": "Enter the new message",
+  "not_enough_messages": "Not enough messages to reorder",
+  "drag_to_reorder": "Drag messages to reorder",
+  "switch_student": "Switch student",
+  "emoji": "Emoji",
+  "image": "Image",
+  "student": "Student",
+  "send_as_student": "Send as student",
+  "send_as_teacher": "Send as teacher",
+  "screenshot": "Screenshot",
+  "current_identity_student": "Now sending as student",
+  "current_identity_teacher": "Now sending as teacher",
+  "@image_send_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "gallery": "Gallery",
+  "stroke_width": "Stroke width",
+  "undo": "Undo",
+  "redo": "Redo",
+  "drawing_eraser": "Eraser",
+  "drawing_highlighter": "Highlighter",
+  "drawing_pencil": "Pencil",
+  "drawing_marker": "Marker",
+  "version": "Version",
+  "developer": "Developer",
+  "open_source_license": "Open-source license",
+  "clear_drawing_confirm": "Clear the drawing?",
+  "custom_color": "Custom color",
+  "search_students": "Search students",
+  "no_student_matches": "No matching students",
+  "ai_image_model_warning": "This model may not support image input. Switch to a vision-capable model to recognize images.",
+  "select_all_document": "Select all text",
+  "copy_all_text": "Copy all text",
+  "all_text_copied": "All text copied",
+  "move_canvas": "Move canvas",
+  "center_canvas": "Center canvas",
+  "zoom_in": "Zoom in",
+  "zoom_out": "Zoom out",
+  "canvas_background": "Canvas background",
+  "canvas_style_grid": "Grid",
+  "canvas_style_dots": "Dots",
+  "canvas_style_none": "No background",
+  "ai_conversation_save_failed": "Could not save the conversation: {error}",
+  "@ai_conversation_save_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "save_failed_retrying": "Save failed. Your changes are kept and will be retried.",
+  "recovery_draft_found": "Unsaved draft found",
+  "recovery_draft_message": "A recovery draft from your last session is available. Restore it?",
+  "open_menu": "Open menu",
+  "theme_system": "System",
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "search_notes": "Search notes",
+  "search_notes_hint": "Search titles, content and tags",
+  "search_empty_title": "Start typing to search",
+  "search_empty_message": "Search titles, body text, checklist items and tags.",
+  "search_no_results_title": "No matching notes",
+  "search_no_results_message": "Try a shorter keyword or remove a tag filter.",
+  "search_clear": "Clear search",
+  "untitled": "Untitled",
+  "search_results_count": "{count} result(s)",
+  "@search_results_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "copy_reply": "Copy reply",
+  "regenerate_reply": "Regenerate",
+  "reply_copied": "Reply copied",
+  "copy_reply_failed": "Could not copy reply",
+  "export_markdown": "Copy notes as Markdown",
+  "export_markdown_subtitle": "Copy all active notes to the clipboard",
+  "export_backup": "Save JSON backup",
+  "export_backup_subtitle": "Save notes, tags, chats and AI conversations",
+  "export_markdown_done": "Notes copied to clipboard",
+  "export_backup_saved": "Backup saved to {path}",
+  "@export_backup_saved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "export_failed": "Export failed: {error}",
+  "@export_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "add_text_component": "Add text component",
+  "message_actions": "Message actions",
+  "copy": "Copy",
+  "select_text": "Select text",
+  "delete_message_confirm": "Delete this message?",
+  "delete_message_body": "This message will be removed from the conversation.",
+  "regenerate_confirm": "Regenerate this reply?",
+  "remove_following_messages": "Messages after this reply will be removed because the context changes.",
+  "edit_message_hint": "Edit message text",
+  "about_tagline": "A quiet place for notes, ideas and conversations."
+}
