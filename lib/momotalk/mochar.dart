@@ -58,6 +58,7 @@ class _MoCharacterPageState extends State<MoCharacterPage> {
   String _remark = '';
   String _teacherAvatar = '';
   String _greeting = '';
+  String? _lastAppLanguageCode;
   late Box _box;
 
   static const String _remarkKey = 'mochar_remark';
@@ -78,6 +79,26 @@ class _MoCharacterPageState extends State<MoCharacterPage> {
     super.initState();
     _box = Hive.box('HiveThemeBox');
     _loadSettings();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final appLanguage = Localizations.localeOf(context).languageCode;
+    if (_lastAppLanguageCode == appLanguage) return;
+    _lastAppLanguageCode = appLanguage;
+    // Only follow the app language when that language is new. This preserves
+    // an explicit student-name language choice while the app language stays
+    // unchanged.
+    final syncedLocale = _readString(
+      _box.get('mochar_nameLanguageSyncedLocale'),
+    );
+    if (syncedLocale == appLanguage) return;
+    final normalized = _normalizeLanguageCode(appLanguage);
+    _nameLanguage = normalized;
+    _box.put('mochar_nameLanguage', normalized);
+    _box.put('mochar_nameLanguageSyncedLocale', appLanguage);
+    NoteStore.revision.value = NoteStore.revision.value + 1;
   }
 
   static bool _readBool(Object? value, bool fallback) {
@@ -328,6 +349,14 @@ class _MoCharacterPageState extends State<MoCharacterPage> {
     if (value == null || !mounted) return;
     setState(() => _greeting = value);
     await _box.put(_greetingKey, value);
+    // A changed greeting should be shown again as an in-app notice the next
+    // time an empty chat is opened.
+    final shownKeys = _box.keys
+        .where((key) => key.toString().startsWith('mochar_greeting_shown_'))
+        .toList();
+    for (final key in shownKeys) {
+      await _box.delete(key);
+    }
   }
 
   Future<void> _pickStudent() async {

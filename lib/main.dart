@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, non_constant_identifier_names
 
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -260,6 +261,8 @@ class _KeyboardDismissOnResume extends StatefulWidget {
 
 class _KeyboardDismissOnResumeState extends State<_KeyboardDismissOnResume>
     with WidgetsBindingObserver {
+  Timer? _resumeDismissTimer;
+
   @override
   void initState() {
     super.initState();
@@ -268,24 +271,50 @@ class _KeyboardDismissOnResumeState extends State<_KeyboardDismissOnResume>
 
   @override
   void dispose() {
+    _resumeDismissTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   void _dismissKeyboard() {
-    FocusManager.instance.primaryFocus?.unfocus(
-      disposition: UnfocusDisposition.scope,
-    );
+    final focus = FocusManager.instance.primaryFocus;
+    if (focus != null) {
+      // Detach the Android input connection as well as clearing Flutter focus.
+      // Some Android IMEs keep a stale bottom inset when an activity is
+      // restored without an explicit clearClient call.
+      focus.unfocus(disposition: UnfocusDisposition.scope);
+      SystemChannels.textInput.invokeMethod<void>('TextInput.clearClient');
+    }
     SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+  }
+
+  void _scheduleDismissAfterResume() {
+    _resumeDismissTimer?.cancel();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _dismissKeyboard();
+      // The Android window can restore its previous focus after the first
+      // frame. Hide again once the resume transition has fully settled.
+      _resumeDismissTimer = Timer(
+        const Duration(milliseconds: 180),
+        _dismissKeyboard,
+      );
+    });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) return;
-    _dismissKeyboard();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _dismissKeyboard();
-    });
+    if (state == AppLifecycleState.resumed) {
+      _scheduleDismissAfterResume();
+      return;
+    }
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.detached) {
+      _resumeDismissTimer?.cancel();
+      _dismissKeyboard();
+    }
   }
 
   @override

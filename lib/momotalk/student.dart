@@ -16,12 +16,73 @@ import 'package:neonote/widgets/image_source_view.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
+const List<String> _studentNameLanguageCodes = <String>[
+  'zh',
+  'ja',
+  'en',
+  'ko',
+  'es',
+  'ru',
+];
+
+const Map<String, List<String>> _studentNameFieldSuffixes =
+    <String, List<String>>{
+      'zh': <String>['cn', 'zh', 'zh_cn'],
+      'ja': <String>['jp', 'ja', 'ja_jp'],
+      'en': <String>['en'],
+      'ko': <String>['ko', 'kr'],
+      'es': <String>['es'],
+      'ru': <String>['ru'],
+    };
+
+Map<String, String> _decodeNameMap(Object? raw) {
+  Object? value = raw;
+  if (raw is String && raw.trim().isNotEmpty) {
+    try {
+      value = jsonDecode(raw);
+    } catch (_) {
+      value = null;
+    }
+  }
+  if (value is! Map) return const <String, String>{};
+  return <String, String>{
+    for (final entry in value.entries)
+      if (entry.value?.toString().trim().isNotEmpty ?? false)
+        entry.key.toString(): entry.value.toString().trim(),
+  };
+}
+
+Map<String, String> _localizedNameVariants(
+  Map<String, dynamic> map,
+  String field,
+  String fallback,
+) {
+  final base = fallback.trim();
+  final variants = <String, String>{};
+  for (final language in _studentNameLanguageCodes) {
+    var value = '';
+    for (final suffix in _studentNameFieldSuffixes[language] ?? const []) {
+      final candidate = map['${field}_$suffix']?.toString().trim() ?? '';
+      if (candidate.isNotEmpty) {
+        value = candidate;
+        break;
+      }
+    }
+    if (value.isEmpty) value = base;
+    if (value.isNotEmpty) variants[language] = value;
+  }
+  return variants;
+}
+
 class BuiltInStudent {
   final int id;
   final String name;
   final String familyName;
   final String givenName;
   final String avatarUrl;
+  final Map<String, String> familyNames;
+  final Map<String, String> givenNames;
+  final Map<String, String> fullNames;
 
   const BuiltInStudent({
     required this.id,
@@ -29,12 +90,18 @@ class BuiltInStudent {
     required this.avatarUrl,
     this.familyName = '',
     this.givenName = '',
+    this.familyNames = const <String, String>{},
+    this.givenNames = const <String, String>{},
+    this.fullNames = const <String, String>{},
   });
 
   String get displayName => studentDisplayName(
     fullName: name,
     familyName: familyName,
     givenName: givenName,
+    familyNames: familyNames,
+    givenNames: givenNames,
+    fullNames: fullNames,
   );
 
   Map<String, Object?> toMap() {
@@ -43,6 +110,9 @@ class BuiltInStudent {
       'name': name,
       'family_name': familyName,
       'given_name': givenName,
+      'family_names': jsonEncode(familyNames),
+      'given_names': jsonEncode(givenNames),
+      'full_names': jsonEncode(fullNames),
       'avatar_url': avatarUrl,
     };
   }
@@ -53,6 +123,9 @@ class BuiltInStudent {
       name: map['name']?.toString() ?? '',
       familyName: map['family_name']?.toString() ?? '',
       givenName: map['given_name']?.toString() ?? '',
+      familyNames: _decodeNameMap(map['family_names']),
+      givenNames: _decodeNameMap(map['given_names']),
+      fullNames: _decodeNameMap(map['full_names']),
       avatarUrl: map['avatar_url']?.toString() ?? '',
     );
   }
@@ -124,7 +197,7 @@ class CustomStudentRepository {
       final databasePath = await getDatabasesPath();
       _database = await openDatabase(
         p.join(databasePath, 'neonote_custom_students.db'),
-        version: 3,
+        version: 4,
         onCreate: (db, version) async {
           await _createTables(db);
         },
@@ -164,6 +237,26 @@ class CustomStudentRepository {
               'TEXT NOT NULL DEFAULT ""',
             );
           }
+          if (oldVersion < 4) {
+            await _addColumnIfMissing(
+              db,
+              _builtInTable,
+              'family_names',
+              'TEXT NOT NULL DEFAULT "{}"',
+            );
+            await _addColumnIfMissing(
+              db,
+              _builtInTable,
+              'given_names',
+              'TEXT NOT NULL DEFAULT "{}"',
+            );
+            await _addColumnIfMissing(
+              db,
+              _builtInTable,
+              'full_names',
+              'TEXT NOT NULL DEFAULT "{}"',
+            );
+          }
         },
       );
       return _database;
@@ -189,6 +282,9 @@ class CustomStudentRepository {
       'name TEXT NOT NULL,'
       'family_name TEXT NOT NULL DEFAULT "",'
       'given_name TEXT NOT NULL DEFAULT "",'
+      'family_names TEXT NOT NULL DEFAULT "{}",'
+      'given_names TEXT NOT NULL DEFAULT "{}",'
+      'full_names TEXT NOT NULL DEFAULT "{}",'
       'avatar_url TEXT NOT NULL DEFAULT "",'
       'position INTEGER NOT NULL DEFAULT 0)',
     );
@@ -289,6 +385,9 @@ class CustomStudentRepository {
               'name': student.name,
               'family_name': student.familyName,
               'given_name': student.givenName,
+              'family_names': jsonEncode(student.familyNames),
+              'given_names': jsonEncode(student.givenNames),
+              'full_names': jsonEncode(student.fullNames),
               'avatar_url': student.avatarUrl,
               'position': index,
             }, conflictAlgorithm: ConflictAlgorithm.replace);
@@ -339,7 +438,7 @@ class _StudentPickerPageState extends State<StudentPickerPage> {
   List<CustomStudent> _customStudents = <CustomStudent>[];
   bool _customLoading = true;
   Future<List<BuiltInStudent>>? _builtInFuture;
-  static const int _builtInDataVersion = 3;
+  static const int _builtInDataVersion = 4;
 
   @override
   void initState() {
@@ -463,6 +562,9 @@ class _StudentPickerPageState extends State<StudentPickerPage> {
             name: name,
             familyName: familyName,
             givenName: givenName,
+            familyNames: _localizedNameVariants(map, 'family_name', familyName),
+            givenNames: _localizedNameVariants(map, 'given_name', givenName),
+            fullNames: _localizedNameVariants(map, 'name', name),
             avatarUrl: _normalizeAvatar(avatar),
           ),
         );
@@ -1058,6 +1160,9 @@ const List<BuiltInStudent> _fallbackBuiltInStudents = <BuiltInStudent>[
     name: '圣园未花',
     familyName: '圣园',
     givenName: '未花',
+    familyNames: <String, String>{'zh': '圣园', 'ja': '聖園'},
+    givenNames: <String, String>{'zh': '未花', 'ja': 'ミカ'},
+    fullNames: <String, String>{'zh': '圣园未花', 'ja': '聖園ミカ'},
     avatarUrl:
         'https://static.kivo.wiki/images/students/%E5%9C%A3%E5%9B%AD%E6%9C%AA%E8%8A%B1/avatar.png',
   ),
@@ -1066,6 +1171,9 @@ const List<BuiltInStudent> _fallbackBuiltInStudents = <BuiltInStudent>[
     name: '小鸟游星野',
     familyName: '小鸟游',
     givenName: '星野',
+    familyNames: <String, String>{'zh': '小鸟游', 'ja': '小鳥遊'},
+    givenNames: <String, String>{'zh': '星野', 'ja': 'ホシノ'},
+    fullNames: <String, String>{'zh': '小鸟游星野', 'ja': '小鳥遊ホシノ'},
     avatarUrl:
         'https://static.kivo.wiki/images/students/%E5%B0%8F%E9%B8%9F%E6%B8%B8%20%E6%98%9F%E9%87%8E/avatar.png',
   ),
@@ -1074,6 +1182,9 @@ const List<BuiltInStudent> _fallbackBuiltInStudents = <BuiltInStudent>[
     name: '砂狼白子',
     familyName: '砂狼',
     givenName: '白子',
+    familyNames: <String, String>{'zh': '砂狼', 'ja': '砂狼'},
+    givenNames: <String, String>{'zh': '白子', 'ja': 'シロコ'},
+    fullNames: <String, String>{'zh': '砂狼白子', 'ja': '砂狼シロコ'},
     avatarUrl:
         'https://static.kivo.wiki/images/students/%E7%A0%82%E7%8B%BC%20%E7%99%BD%E5%AD%90/avatar.png',
   ),
@@ -1082,6 +1193,9 @@ const List<BuiltInStudent> _fallbackBuiltInStudents = <BuiltInStudent>[
     name: '奥空绫音',
     familyName: '奥空',
     givenName: '绫音',
+    familyNames: <String, String>{'zh': '奥空', 'ja': '奥空'},
+    givenNames: <String, String>{'zh': '绫音', 'ja': 'アヤネ'},
+    fullNames: <String, String>{'zh': '奥空绫音', 'ja': '奥空アヤネ'},
     avatarUrl:
         'https://static.kivo.wiki/images/students/%E5%A5%A5%E7%A9%BA%20%E7%BB%AB%E9%9F%B3/avatar.png',
   ),
@@ -1090,6 +1204,9 @@ const List<BuiltInStudent> _fallbackBuiltInStudents = <BuiltInStudent>[
     name: '十六夜野宫',
     familyName: '十六夜',
     givenName: '野宫',
+    familyNames: <String, String>{'zh': '十六夜', 'ja': '十六夜'},
+    givenNames: <String, String>{'zh': '野宫', 'ja': 'ノノミ'},
+    fullNames: <String, String>{'zh': '十六夜野宫', 'ja': '十六夜ノノミ'},
     avatarUrl:
         'https://static.kivo.wiki/images/students/%E5%8D%81%E5%85%AD%E5%A4%9C%20%E9%87%8E%E5%AE%AB/avatar.png',
   ),
@@ -1098,6 +1215,9 @@ const List<BuiltInStudent> _fallbackBuiltInStudents = <BuiltInStudent>[
     name: '空崎日奈',
     familyName: '空崎',
     givenName: '日奈',
+    familyNames: <String, String>{'zh': '空崎', 'ja': '空崎'},
+    givenNames: <String, String>{'zh': '日奈', 'ja': 'ヒナ'},
+    fullNames: <String, String>{'zh': '空崎日奈', 'ja': '空崎ヒナ'},
     avatarUrl:
         'https://static.kivo.wiki/images/students/%E7%A9%BA%E5%B4%8E%20%E6%97%A5%E5%A5%88/avatar.png',
   ),

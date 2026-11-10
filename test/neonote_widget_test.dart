@@ -14,8 +14,10 @@ import 'package:neonote/momotalk/mohome.dart';
 import 'package:neonote/momotalk/student.dart';
 import 'package:neonote/note_editor.dart';
 import 'package:neonote/search.dart';
+import 'package:neonote/services/gesture_settings.dart';
 import 'package:neonote/settings.dart'
     show
+        GestureMenuGroup,
         LocaleProvider,
         MySettingPage,
         ScaleProvider,
@@ -24,10 +26,17 @@ import 'package:neonote/settings.dart'
 import 'package:neonote/store/note_store.dart';
 import 'package:provider/provider.dart';
 
-Widget _wrap(Widget child) => MaterialApp(
+Widget _wrap(Widget child, {Locale locale = const Locale('zh')}) => MaterialApp(
   theme: ThemeData(useMaterial3: true, splashFactory: InkRipple.splashFactory),
-  locale: const Locale('zh'),
-  supportedLocales: const [Locale('zh'), Locale('en')],
+  locale: locale,
+  supportedLocales: const [
+    Locale('zh'),
+    Locale('ja'),
+    Locale('ko'),
+    Locale('es'),
+    Locale('ru'),
+    Locale('en'),
+  ],
   localizationsDelegates: const [
     AppLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
@@ -275,6 +284,116 @@ void main() {
     expect(NoteStore.messages(chat.id).single.isTeacher, isTrue);
     expect(find.textContaining('AI 出错'), findsOneWidget);
   });
+  testWidgets('note editor toolbar stays above the software keyboard', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap(const Scaffold(body: NoteEditorView())));
+    await _pump(tester);
+
+    await tester.tap(find.byIcon(Icons.add).first);
+    await _pump(tester);
+    await tester.tap(find.text('文本'));
+    await _pump(tester);
+
+    final keyboardHeight = 300 * tester.view.devicePixelRatio;
+    tester.view.viewInsets = FakeViewPadding(bottom: keyboardHeight);
+    await tester.pumpAndSettle();
+
+    final undo = find.byIcon(Icons.undo);
+    expect(undo, findsOneWidget);
+    expect(tester.getBottomLeft(undo).dy, lessThanOrEqualTo(301));
+
+    tester.view.resetViewInsets();
+    await tester.pumpAndSettle();
+    expect(tester.getBottomLeft(undo).dy, greaterThan(301));
+  });
+
+  testWidgets('image note blank area opens the image source picker', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap(const Scaffold(body: NoteEditorView())));
+    await _pump(tester);
+
+    await tester.tap(find.byIcon(Icons.add).first);
+    await _pump(tester);
+    await tester.tap(find.text('图片'));
+    await _pump(tester);
+
+    // The newly-created image component opens the picker once automatically.
+    // Dismiss it, then verify the empty placeholder itself is actionable.
+    await tester.tapAt(const Offset(8, 8));
+    await _pump(tester);
+    expect(find.text('选择图片'), findsNothing);
+
+    await tester.tap(find.text('添加图片').first);
+    await _pump(tester);
+    expect(find.text('选择图片'), findsOneWidget);
+  });
+
+  testWidgets('gesture menu clips long localized labels without overflow', (
+    tester,
+  ) async {
+    for (final code in ['zh', 'ja', 'ko', 'es', 'ru', 'en']) {
+      await tester.pumpWidget(
+        _wrap(const GestureMenuGroup(), locale: Locale(code)),
+      );
+      await _pump(tester);
+      expect(tester.takeException(), isNull, reason: 'locale $code');
+
+      final dropdowns = find.byType(DropdownButton<GestureAction>);
+      expect(dropdowns, findsNWidgets(2));
+      await tester.tap(dropdowns.first);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'menu $code');
+      await tester.tapAt(const Offset(8, 8));
+      await tester.pumpAndSettle();
+    }
+  });
+
+  testWidgets('custom greeting is an info dialog, not a chat message', (
+    tester,
+  ) async {
+    await Hive.box(themeBox).put('mochar_custom_greeting', '欢迎回来');
+    await NoteStore.ensureGroups();
+    final chat = await NoteStore.addChat(
+      groupId: NoteStore.defaultGroupId(),
+      name: '测试学生',
+    );
+
+    await tester.pumpWidget(_wrap(const MoHomePage()));
+    await _pump(tester);
+    await tester.tap(find.text('测试学生'));
+    await _pump(tester);
+
+    expect(find.text('自定义问候语'), findsOneWidget);
+    expect(find.text('欢迎回来'), findsOneWidget);
+    expect(NoteStore.messages(chat.id), isEmpty);
+  });
+
+  test('student names follow the selected app language', () {
+    final provider = LocaleProvider();
+    provider.setLocale(const Locale('ja'));
+    expect(Hive.box(themeBox).get('mochar_nameLanguage'), 'ja');
+    expect(Hive.box(themeBox).get('mochar_nameLanguageSyncedLocale'), 'ja');
+
+    const student = BuiltInStudent(
+      id: 1,
+      name: '圣园未花',
+      familyName: '圣园',
+      givenName: '未花',
+      familyNames: <String, String>{'zh': '圣园', 'ja': '聖園'},
+      givenNames: <String, String>{'zh': '未花', 'ja': 'ミカ'},
+      avatarUrl: '',
+    );
+    expect(student.displayName, '聖園ミカ');
+
+    provider.setLocale(const Locale('zh'));
+    expect(Hive.box(themeBox).get('mochar_nameLanguage'), 'zh');
+    expect(Hive.box(themeBox).get('mochar_nameLanguageSyncedLocale'), 'zh');
+    expect(student.displayName, '圣园未花');
+    provider.dispose();
+  });
+
   testWidgets('drawer "+" creates a label without breaking other tiles', (
     tester,
   ) async {

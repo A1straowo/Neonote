@@ -2926,8 +2926,10 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
     final foreground = _defaultTextColor(scheme);
     final chrome = _chromeSurface(scheme);
     final mediaPadding = MediaQuery.paddingOf(context);
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
     final topInset = mediaPadding.top + kToolbarHeight + DeviceInfo.pt(4);
-    final bottomInset = mediaPadding.bottom + DeviceInfo.pt(124);
+    final bottomInset =
+        mediaPadding.bottom + keyboardInset + DeviceInfo.pt(124);
 
     return Stack(
       children: [
@@ -3031,19 +3033,24 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
               ],
             ),
           ),
-          bottomNavigationBar: _TextToolbar(
-            activePanel: _panel,
-            onUndo: _undo,
-            onRedo: _redo,
-            canUndo: _canUndo,
-            canRedo: _canRedo,
-            onAdd: () => _togglePanel(_TextToolbarPanel.insert),
-            onPalette: _showPalette,
-            onFormat: () => _togglePanel(_TextToolbarPanel.format),
-            onMore: () => _togglePanel(_TextToolbarPanel.more),
-            secondary: _buildSecondaryPanel(scheme, foreground),
-            backgroundColor: chrome,
-            foregroundColor: foreground,
+          bottomNavigationBar: AnimatedPadding(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOutCubic,
+            padding: EdgeInsets.only(bottom: keyboardInset),
+            child: _TextToolbar(
+              activePanel: _panel,
+              onUndo: _undo,
+              onRedo: _redo,
+              canUndo: _canUndo,
+              canRedo: _canRedo,
+              onAdd: () => _togglePanel(_TextToolbarPanel.insert),
+              onPalette: _showPalette,
+              onFormat: () => _togglePanel(_TextToolbarPanel.format),
+              onMore: () => _togglePanel(_TextToolbarPanel.more),
+              secondary: _buildSecondaryPanel(scheme, foreground),
+              backgroundColor: chrome,
+              foregroundColor: foreground,
+            ),
           ),
         ),
       ],
@@ -4338,33 +4345,45 @@ class _ImageWorkbenchState extends State<_ImageWorkbench> {
 
   Widget _buildEmptyNote(ColorScheme scheme) {
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      height: DeviceInfo.pt(260),
-      width: double.infinity,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
+    final borderRadius = BorderRadius.circular(DeviceInfo.pt(16));
+    return Semantics(
+      button: true,
+      label: l10n.add_image,
+      child: Material(
         color: scheme.surfaceContainerHighest.withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(DeviceInfo.pt(16)),
-        border: Border.all(color: scheme.outlineVariant),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.add_photo_alternate_outlined,
-            size: DeviceInfo.pt(54),
-            color: scheme.onSurface.withValues(alpha: 0.42),
-          ),
-          SizedBox(height: DeviceInfo.pt(10)),
-          Text(
-            l10n.add_image,
-            style: TextStyle(
-              fontFamily: 'ResourceHanCN',
-              fontSize: DeviceInfo.pt(16),
-              color: scheme.onSurface.withValues(alpha: 0.65),
+        borderRadius: borderRadius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: _showSourceSheet,
+          child: Container(
+            height: DeviceInfo.pt(260),
+            width: double.infinity,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: borderRadius,
+              border: Border.all(color: scheme.outlineVariant),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.add_photo_alternate_outlined,
+                  size: DeviceInfo.pt(54),
+                  color: scheme.onSurface.withValues(alpha: 0.42),
+                ),
+                SizedBox(height: DeviceInfo.pt(10)),
+                Text(
+                  l10n.add_image,
+                  style: TextStyle(
+                    fontFamily: 'ResourceHanCN',
+                    fontSize: DeviceInfo.pt(16),
+                    color: scheme.onSurface.withValues(alpha: 0.65),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

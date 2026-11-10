@@ -27,6 +27,15 @@ String _asString(Object? value, [String fallback = '']) {
   return text;
 }
 
+Map<String, String> _asStringMap(Object? value) {
+  if (value is! Map) return const <String, String>{};
+  return <String, String>{
+    for (final entry in value.entries)
+      if (entry.value?.toString().trim().isNotEmpty ?? false)
+        entry.key.toString(): entry.value.toString().trim(),
+  };
+}
+
 int _asInt(Object? value, [int fallback = 0]) {
   if (value is int) return value;
   if (value is num) return value.toInt();
@@ -536,6 +545,9 @@ class MoChat {
     this.studentId = 0,
     this.familyName = '',
     this.givenName = '',
+    this.familyNames = const <String, String>{},
+    this.givenNames = const <String, String>{},
+    this.fullNames = const <String, String>{},
     this.pinned = false,
     this.archived = false,
     this.marked = false,
@@ -550,11 +562,17 @@ class MoChat {
   int studentId;
   String familyName;
   String givenName;
+  Map<String, String> familyNames;
+  Map<String, String> givenNames;
+  Map<String, String> fullNames;
 
   String get displayName => studentDisplayName(
     fullName: name,
     familyName: familyName,
     givenName: givenName,
+    familyNames: familyNames,
+    givenNames: givenNames,
+    fullNames: fullNames,
   );
 
   bool pinned;
@@ -572,6 +590,9 @@ class MoChat {
     'student_id': studentId,
     'family_name': familyName,
     'given_name': givenName,
+    'family_names': familyNames,
+    'given_names': givenNames,
+    'full_names': fullNames,
     'pinned': pinned,
     'archived': archived,
     'marked': marked,
@@ -587,6 +608,9 @@ class MoChat {
     studentId: _asInt(map['student_id']),
     familyName: _asString(map['family_name']),
     givenName: _asString(map['given_name']),
+    familyNames: _asStringMap(map['family_names']),
+    givenNames: _asStringMap(map['given_names']),
+    fullNames: _asStringMap(map['full_names']),
     pinned: _asBool(map['pinned']),
     archived: _asBool(map['archived']),
     marked: _asBool(map['marked']),
@@ -991,6 +1015,9 @@ class NoteStore {
     int studentId = 0,
     String familyName = '',
     String givenName = '',
+    Map<String, String> familyNames = const <String, String>{},
+    Map<String, String> givenNames = const <String, String>{},
+    Map<String, String> fullNames = const <String, String>{},
   }) {
     return _mutate(() async {
       final chats = NoteStore.chats();
@@ -1002,6 +1029,9 @@ class NoteStore {
         studentId: studentId,
         familyName: familyName.trim(),
         givenName: givenName.trim(),
+        familyNames: Map<String, String>.from(familyNames),
+        givenNames: Map<String, String>.from(givenNames),
+        fullNames: Map<String, String>.from(fullNames),
         updatedAt: DateTime.now().millisecondsSinceEpoch,
       );
       chats.add(chat);
@@ -1075,6 +1105,9 @@ class NoteStore {
     required int studentId,
     String familyName = '',
     String givenName = '',
+    Map<String, String> familyNames = const <String, String>{},
+    Map<String, String> givenNames = const <String, String>{},
+    Map<String, String> fullNames = const <String, String>{},
   }) {
     return _mutate(() async {
       final all = chats();
@@ -1085,6 +1118,9 @@ class NoteStore {
       all[index].studentId = studentId;
       all[index].familyName = familyName.trim();
       all[index].givenName = givenName.trim();
+      all[index].familyNames = Map<String, String>.from(familyNames);
+      all[index].givenNames = Map<String, String>.from(givenNames);
+      all[index].fullNames = Map<String, String>.from(fullNames);
       await _saveChats(all);
     });
   }
@@ -1273,14 +1309,36 @@ bool _studentNameSetting(String key, bool fallback) {
 ///
 /// The API exposes family and given names separately. Custom students and old
 /// cached records that only have a full name gracefully fall back to it.
+String _studentNameLanguage() {
+  try {
+    if (!Hive.isBoxOpen(neonoteBoxName)) return 'zh';
+    final box = Hive.box(neonoteBoxName);
+    final stored = _asString(box.get('mochar_nameLanguage'));
+    if (stored.isNotEmpty) return stored;
+    final locale = _asString(box.get('localeCode'), 'zh');
+    return locale.isEmpty ? 'zh' : locale;
+  } catch (_) {
+    return 'zh';
+  }
+}
+
+String _localizedStudentNamePart(String base, Map<String, String>? variants) {
+  final language = _studentNameLanguage();
+  final localized = variants?[language]?.trim() ?? '';
+  return localized.isNotEmpty ? localized : base.trim();
+}
+
 String studentDisplayName({
   required String fullName,
   String familyName = '',
   String givenName = '',
+  Map<String, String>? familyNames,
+  Map<String, String>? givenNames,
+  Map<String, String>? fullNames,
 }) {
-  final full = fullName.trim();
-  final family = familyName.trim();
-  final given = givenName.trim();
+  final full = _localizedStudentNamePart(fullName, fullNames);
+  final family = _localizedStudentNamePart(familyName, familyNames);
+  final given = _localizedStudentNamePart(givenName, givenNames);
   if (family.isEmpty && given.isEmpty) return full;
   final showSurname = _studentNameSetting('mochar_showSurname', true);
   final reverse = _studentNameSetting('mochar_reverseName', false);

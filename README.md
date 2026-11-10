@@ -59,10 +59,10 @@ Outputs:
 
 Release artifacts use the following names:
 
-- `Neonote-v1.0.1-arm64-v8a.apk` — modern 64-bit ARM phones
-- `Neonote-v1.0.1-armeabi-v7a.apk` — older 32-bit ARM phones
-- `Neonote-v1.0.1-x86_64.apk` — x86_64 emulators and devices
-- `Neonote-v1.0.1-universal.apk` — universal fallback build
+- `Neonote-v1.0.2-arm64-v8a.apk` — modern 64-bit ARM phones
+- `Neonote-v1.0.2-armeabi-v7a.apk` — older 32-bit ARM phones
+- `Neonote-v1.0.2-x86_64.apk` — x86_64 emulators and devices
+- `Neonote-v1.0.2-universal.apk` — universal fallback build
 
 GitHub Actions rebuilds all four release assets from the source when a `v*` tag is pushed.
 

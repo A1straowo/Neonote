@@ -1,14 +1,16 @@
 // ignore_for_file: deprecated_member_use, use_build_context_synchronously
 
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:neonote/deepseek/ai_chat_page.dart';
 import 'package:neonote/l10n/app_localizations.dart';
-import 'package:neonote/main.dart' show DeviceInfo;
+import 'package:neonote/main.dart' show DeviceInfo, themeBox;
 import 'package:neonote/momotalk/mochat.dart';
 import 'package:neonote/momotalk/student.dart';
 import 'package:neonote/services/deepseek_service.dart';
@@ -406,6 +408,9 @@ class _MoHomePageState extends State<MoHomePage> {
           title: chat.name,
           familyName: chat.familyName,
           givenName: chat.givenName,
+          familyNames: chat.familyNames,
+          givenNames: chat.givenNames,
+          fullNames: chat.fullNames,
           avatarUrl: chat.avatarUrl,
           studentId: chat.studentId,
         ),
@@ -599,6 +604,9 @@ class MoChatDetailPage extends StatefulWidget {
     this.studentId = 0,
     this.familyName = '',
     this.givenName = '',
+    this.familyNames = const <String, String>{},
+    this.givenNames = const <String, String>{},
+    this.fullNames = const <String, String>{},
   });
 
   final String chatId;
@@ -607,6 +615,9 @@ class MoChatDetailPage extends StatefulWidget {
   final String givenName;
   final String avatarUrl;
   final int studentId;
+  final Map<String, String> familyNames;
+  final Map<String, String> givenNames;
+  final Map<String, String> fullNames;
 
   @override
   State<MoChatDetailPage> createState() => _MoChatDetailPageState();
@@ -622,6 +633,9 @@ class _MoChatDetailPageState extends State<MoChatDetailPage> {
   late String _studentName = widget.title;
   late String _studentFamilyName = widget.familyName;
   late String _studentGivenName = widget.givenName;
+  late Map<String, String> _studentFamilyNames = widget.familyNames;
+  late Map<String, String> _studentGivenNames = widget.givenNames;
+  late Map<String, String> _studentFullNames = widget.fullNames;
   late String _studentAvatar = widget.avatarUrl;
   late int _studentId = widget.studentId;
 
@@ -629,12 +643,17 @@ class _MoChatDetailPageState extends State<MoChatDetailPage> {
     fullName: _studentName,
     familyName: _studentFamilyName,
     givenName: _studentGivenName,
+    familyNames: _studentFamilyNames,
+    givenNames: _studentGivenNames,
+    fullNames: _studentFullNames,
   );
 
   @override
   void initState() {
     super.initState();
-    _seedGreeting();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_showCustomGreetingIfNeeded());
+    });
   }
 
   void _showNotice(String message) {
@@ -694,11 +713,17 @@ class _MoChatDetailPageState extends State<MoChatDetailPage> {
     String? familyName;
     String? givenName;
     String? avatar;
+    var familyNames = const <String, String>{};
+    var givenNames = const <String, String>{};
+    var fullNames = const <String, String>{};
     int id = 0;
     if (result is BuiltInStudent) {
       name = result.name;
       familyName = result.familyName;
       givenName = result.givenName;
+      familyNames = result.familyNames;
+      givenNames = result.givenNames;
+      fullNames = result.fullNames;
       avatar = result.avatarUrl;
       id = result.id;
     } else if (result is CustomStudent) {
@@ -716,12 +741,18 @@ class _MoChatDetailPageState extends State<MoChatDetailPage> {
       givenName: givenName ?? '',
       avatarUrl: avatar ?? '',
       studentId: id,
+      familyNames: familyNames,
+      givenNames: givenNames,
+      fullNames: fullNames,
     );
     if (!mounted) return;
     setState(() {
       _studentName = name!;
       _studentFamilyName = familyName ?? '';
       _studentGivenName = givenName ?? '';
+      _studentFamilyNames = familyNames;
+      _studentGivenNames = givenNames;
+      _studentFullNames = fullNames;
       _studentAvatar = avatar ?? '';
       _studentId = id;
     });
@@ -1088,16 +1119,36 @@ class _MoChatDetailPageState extends State<MoChatDetailPage> {
     );
   }
 
-  Future<void> _seedGreeting() async {
+  Future<void> _showCustomGreetingIfNeeded() async {
     if (NoteStore.messages(widget.chatId).isNotEmpty) return;
-    final greeting = NoteStore.getString('mochar_custom_greeting', '');
+    final greeting = NoteStore.getString('mochar_custom_greeting', '').trim();
     if (greeting.isEmpty) return;
-    await NoteStore.addMessage(
-      chatId: widget.chatId,
-      text: greeting,
-      isTeacher: false,
+    final box = Hive.box(themeBox);
+    final shownKey = 'mochar_greeting_shown_${widget.chatId}';
+    if (box.get(shownKey, defaultValue: false) == true) return;
+    await box.put(shownKey, true);
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: const Icon(Icons.campaign_outlined),
+        title: Text(
+          l10n.custom_greeting,
+          style: const TextStyle(fontFamily: 'ResourceHanCN'),
+        ),
+        content: Text(
+          greeting,
+          style: const TextStyle(fontFamily: 'ResourceHanCN'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
     );
-    if (mounted) setState(() {});
   }
 
   @override

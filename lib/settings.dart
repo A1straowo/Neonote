@@ -46,7 +46,12 @@ class LocaleProvider extends ChangeNotifier {
 
   void setLocale(Locale locale) {
     _locale = locale;
-    Hive.box(themeBox).put('localeCode', locale.languageCode);
+    final box = Hive.box(themeBox);
+    box.put('localeCode', locale.languageCode);
+    // Student names follow the app language unless the user explicitly
+    // overrides the student-name language afterwards.
+    box.put('mochar_nameLanguage', locale.languageCode);
+    box.put('mochar_nameLanguageSyncedLocale', locale.languageCode);
     notifyListeners();
   }
 }
@@ -682,37 +687,67 @@ class _GestureMenuGroupState extends State<GestureMenuGroup> {
     required ValueChanged<GestureAction?> onChanged,
   }) {
     final l10n = AppLocalizations.of(context)!;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: Container(
-        height: 35,
-        width: 100,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          color: Theme.of(
-            context,
-          ).colorScheme.onSurface.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<GestureAction>(
-            value: value,
-            isExpanded: true,
-            isDense: true,
-            borderRadius: BorderRadius.circular(18),
-            dropdownColor: Theme.of(context).colorScheme.surface,
-            onChanged: onChanged,
-            items: [
-              for (final action in GestureAction.values)
-                DropdownMenuItem<GestureAction>(
-                  value: action,
-                  child: Text(action.label(l10n)),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final controlWidth = (constraints.maxWidth * 0.42)
+            .clamp(92.0, 148.0)
+            .toDouble();
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+          trailing: SizedBox(
+            height: 35,
+            width: controlWidth,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<GestureAction>(
+                  value: value,
+                  isExpanded: true,
+                  isDense: true,
+                  borderRadius: BorderRadius.circular(18),
+                  dropdownColor: Theme.of(context).colorScheme.surface,
+                  onChanged: onChanged,
+                  selectedItemBuilder: (context) => [
+                    for (final action in GestureAction.values)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          action.label(l10n),
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: 'ResourceHanCN',
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                  ],
+                  items: [
+                    for (final action in GestureAction.values)
+                      DropdownMenuItem<GestureAction>(
+                        value: action,
+                        child: Text(
+                          action.label(l10n),
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
                 ),
-            ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

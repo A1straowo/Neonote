@@ -9,6 +9,9 @@ class PickedStudent {
     this.studentId = 0,
     this.familyName = '',
     this.givenName = '',
+    this.familyNames = const <String, String>{},
+    this.givenNames = const <String, String>{},
+    this.fullNames = const <String, String>{},
   });
 
   final String name;
@@ -16,6 +19,9 @@ class PickedStudent {
   final String givenName;
   final String avatarUrl;
   final int studentId;
+  final Map<String, String> familyNames;
+  final Map<String, String> givenNames;
+  final Map<String, String> fullNames;
 }
 
 Future<PickedStudent?> pickStudent(BuildContext context) async {
@@ -36,6 +42,9 @@ Future<PickedStudent?> pickStudent(BuildContext context) async {
       name: result.name,
       familyName: result.familyName,
       givenName: result.givenName,
+      familyNames: result.familyNames,
+      givenNames: result.givenNames,
+      fullNames: result.fullNames,
       avatarUrl: result.avatarUrl,
       studentId: result.id,
     );
@@ -58,6 +67,9 @@ Future<void> createChatWithStudent(
     name: student.name,
     familyName: student.familyName,
     givenName: student.givenName,
+    familyNames: student.familyNames,
+    givenNames: student.givenNames,
+    fullNames: student.fullNames,
     avatarUrl: student.avatarUrl,
     studentId: student.studentId,
   );
