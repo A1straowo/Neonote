@@ -66,6 +66,13 @@ Release artifacts use the following names:
 
 GitHub Actions rebuilds all four release assets from the source when a `v*` tag is pushed.
 
+### APK download mirror
+
+If GitHub Release downloads are blocked by the local DNS/network, use the
+GitHub Pages mirror:
+
+<https://a1straowo.github.io/Neonote/>
+
 The release APKs are currently signed with the standard Android debug key so
 they can be installed directly for testing. Configure a private release
 keystore before distributing production builds.
