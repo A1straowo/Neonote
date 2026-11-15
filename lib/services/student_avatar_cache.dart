@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -20,9 +21,16 @@ class StudentAvatarCache {
 
   static final StudentAvatarCache instance = StudentAvatarCache();
 
+  static const int _cacheVersion = 2;
+  static const int _avatarDimension = 256;
+  static const int _jpegQuality = 82;
+  static const int _maxCacheEntries = 200;
+  static const int _maxCacheBytes = 24 * 1024 * 1024;
+
   final Future<Directory> Function() _directoryProvider;
   final http.Client _client;
   final Map<String, Future<File?>> _inFlight = <String, Future<File?>>{};
+  bool _initialPruneDone = false;
 
   static Future<Directory> _defaultDirectory() async {
     final support = await getApplicationSupportDirectory();
@@ -46,7 +54,7 @@ class StudentAvatarCache {
       hash ^= url.codeUnitAt(i);
       hash = (hash * 0x01000193) & 0x7fffffff;
     }
-    return '${hash.toRadixString(16)}_${url.length}.img';
+    return '${hash.toRadixString(16)}_${url.length}_v$_cacheVersion.jpg';
   }
 
   Future<File?> resolve(String rawUrl) async {
@@ -61,6 +69,11 @@ class StudentAvatarCache {
     } catch (_) {
       return null;
     }
+    if (!_initialPruneDone) {
+      _initialPruneDone = true;
+      await _prune(directory);
+    }
+
     final file = File(p.join(directory.path, _cacheName(url)));
     if (await file.exists()) {
       final length = await file.length();
@@ -97,8 +110,22 @@ class StudentAvatarCache {
       final bytes = response.bodyBytes;
       if (bytes.isEmpty) return null;
 
+      final decoded = img.decodeImage(bytes);
+      if (decoded == null) return null;
+
+      // Avatars are displayed at a small size. Persisting the original image
+      // can waste several megabytes per student, so normalize every cache hit
+      // to a compact square JPEG before it reaches the disk.
+      final resized = img.copyResizeCropSquare(
+        decoded,
+        size: _avatarDimension,
+        interpolation: img.Interpolation.average,
+      );
+      final compactBytes = img.encodeJpg(resized, quality: _jpegQuality);
+      if (compactBytes.isEmpty) return null;
+
       final temp = File('${target.path}.tmp');
-      await temp.writeAsBytes(bytes, flush: true);
+      await temp.writeAsBytes(compactBytes, flush: true);
       if (await target.exists()) await target.delete();
       await temp.rename(target.path);
       unawaited(_prune(target.parent));
@@ -108,7 +135,9 @@ class StudentAvatarCache {
     }
   }
 
-  /// Keeps the cache bounded when users browse many student portraits.
+  /// Keeps both the file count and total disk usage of the avatar cache
+  /// bounded. Versioned filenames also let upgrades discard the old full-size
+  /// cache entries instead of retaining them indefinitely.
   Future<void> _prune(Directory directory) async {
     try {
       final files = await directory
@@ -116,13 +145,36 @@ class StudentAvatarCache {
           .where((entity) => entity is File)
           .cast<File>()
           .toList();
-      if (files.length <= 500) return;
-      files.sort(
+
+      final liveFiles = <File>[];
+      for (final file in files) {
+        final name = p.basename(file.path);
+        final isLegacy = name.endsWith('.img');
+        final isTemp = name.endsWith('.tmp');
+        if (isLegacy || isTemp) {
+          try {
+            await file.delete();
+          } catch (_) {}
+          continue;
+        }
+        if (name.endsWith('_v$_cacheVersion.jpg')) liveFiles.add(file);
+      }
+
+      liveFiles.sort(
         (a, b) => a.statSync().modified.compareTo(b.statSync().modified),
       );
-      for (final file in files.take(files.length - 500)) {
+      var totalBytes = 0;
+      for (final file in liveFiles) {
+        totalBytes += file.statSync().size;
+      }
+      var excessCount = liveFiles.length - _maxCacheEntries;
+      for (final file in liveFiles) {
+        if (excessCount <= 0 && totalBytes <= _maxCacheBytes) break;
         try {
+          final length = file.statSync().size;
           await file.delete();
+          totalBytes -= length;
+          excessCount--;
         } catch (_) {}
       }
     } catch (_) {}
