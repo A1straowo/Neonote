@@ -2,7 +2,7 @@ name: neonote
 description: "Advanced Application with note and momotalk"
 publish_to: 'none'
 
-version: 1.0.3+2004
+version: 1.0.4+2005
 environment:
   sdk: ^3.9.2
 
