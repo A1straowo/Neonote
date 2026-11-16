@@ -90,38 +90,38 @@ The project is useful if you want a single place for short notes, long-form draf
 
 ### Download
 
-The latest version is **v1.0.3**.
+The latest version is **v1.0.4**.
 
 | Build | Recommended for | GitHub release | Backup mirror |
 | --- | --- | --- | --- |
-| `arm64-v8a` | Most modern Android phones | [Download](https://github.com/A1straowo/Neonote/releases/download/v1.0.3/Neonote-1.0.3-arm64-v8a.apk) | [Mirror](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-arm64-v8a.apk) |
-| `armeabi-v7a` | Older 32-bit Android devices | [Download](https://github.com/A1straowo/Neonote/releases/download/v1.0.3/Neonote-1.0.3-armeabi-v7a.apk) | [Mirror](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-armeabi-v7a.apk) |
-| `x86_64` | Android emulators and x86_64 devices | [Download](https://github.com/A1straowo/Neonote/releases/download/v1.0.3/Neonote-1.0.3-x86_64.apk) | [Mirror](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-x86_64.apk) |
-| `universal` | Compatibility fallback (largest file) | [Download](https://github.com/A1straowo/Neonote/releases/download/v1.0.3/Neonote-1.0.3-universal.apk) | [Mirror](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-universal.apk) |
+| `arm64-v8a` | Most modern Android phones | [Download](https://github.com/A1straowo/Neonote/releases/download/v1.0.4/Neonote-1.0.4-arm64-v8a.apk) | [Mirror](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-arm64-v8a.apk) |
+| `armeabi-v7a` | Older 32-bit Android devices | [Download](https://github.com/A1straowo/Neonote/releases/download/v1.0.4/Neonote-1.0.4-armeabi-v7a.apk) | [Mirror](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-armeabi-v7a.apk) |
+| `x86_64` | Android emulators and x86_64 devices | [Download](https://github.com/A1straowo/Neonote/releases/download/v1.0.4/Neonote-1.0.4-x86_64.apk) | [Mirror](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-x86_64.apk) |
+| `universal` | Compatibility fallback (largest file) | [Download](https://github.com/A1straowo/Neonote/releases/download/v1.0.4/Neonote-1.0.4-universal.apk) | [Mirror](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-universal.apk) |
 
 **All downloads:** [GitHub Releases](https://github.com/A1straowo/Neonote/releases/latest) · [Backup mirror](https://a1straowo.github.io/Neonote/) · [Checksums](https://a1straowo.github.io/Neonote/SHA256SUMS.txt)
 
 <details>
-<summary><strong>SHA-256 checksums for v1.0.3</strong></summary>
+<summary><strong>SHA-256 checksums for v1.0.4</strong></summary>
 
 The GitHub release and the backup mirror were packaged separately, so they use different file names and have different checksums. Verify the file you actually downloaded against the matching list below.
 
-**GitHub Releases (`Neonote-1.0.3-...`)**
+**GitHub Releases (`Neonote-1.0.4-...`)**
 
 ```text
-e9142e4f97002766ffe0a0b321cc85c60127a5415b1c39a10188d2f1ddf98e7a  Neonote-1.0.3-arm64-v8a.apk
-5d8b134ca4b8d676e43d238d232ef4dc3c829dec4b46cdfa6f0114f752434d48  Neonote-1.0.3-armeabi-v7a.apk
-87af4063ee7dcbabd87acac2929a8a81de7da6d887ac6ef20e12350a9a4c5b7d  Neonote-1.0.3-x86_64.apk
-9532c1be8369e9ca31f34001577e0b024487b894e4ee3688bffb655681a2120a  Neonote-1.0.3-universal.apk
+93b21eb9a3481fe932de17844e0908e8baed20c610af230a80731eea0c1f0ef5  Neonote-1.0.4-arm64-v8a.apk
+1423f2afcd1d54509122a659f40a31cc75f7dc50724d221ef7ae93d0410b9323  Neonote-1.0.4-armeabi-v7a.apk
+5e47965b44f5c6d6c0b8b36254d53fc335badc5b64b96241923bd85e289d0391  Neonote-1.0.4-x86_64.apk
+2ca08a7aa2a57a3c49df019aeee9497c1f481f5cf7a1da525b00499fda4811d2  Neonote-1.0.4-universal.apk
 ```
 
-**GitHub Pages mirror (`Neonote-v1.0.3-...`)**
+**GitHub Pages mirror (`Neonote-v1.0.4-...`)**
 
 ```text
-c541a045d02aab19fab7c9c6e1260a4e3f541a4c47866339f16abfc7c70ba10f  Neonote-v1.0.3-arm64-v8a.apk
-98acaa162dd647df0ae304dabf6f7fb0825a7ad371548e34c251850ade6ef2f5  Neonote-v1.0.3-armeabi-v7a.apk
-015308f7ab69c6c3d15a9c78b5255003414e9e6544eea4c50cff6dbd0a9af919  Neonote-v1.0.3-x86_64.apk
-cc3be60fd5d7685f4f7654e864e70123cf636f44e077090d83b2f156d81da0a4  Neonote-v1.0.3-universal.apk
+2fc6d73d51a59b9f657dccf4d94eccc31a1f0a12ac549cff499904ba9318d15d  Neonote-v1.0.4-arm64-v8a.apk
+edb755b75b0464b280677b17cb0adfdf56d8866fe1a11b97e1f67d80602fa892  Neonote-v1.0.4-armeabi-v7a.apk
+ea62d89f4af97f41193fde2c68b0a65a03e553180a5c07b56dcf021477683b65  Neonote-v1.0.4-x86_64.apk
+5c57a8edeaa121fdd978d1b5887c25c28e78a597c5d5b1f83ec7bd2828a68192  Neonote-v1.0.4-universal.apk
 ```
 
 </details>
@@ -131,7 +131,7 @@ cc3be60fd5d7685f4f7654e864e70123cf636f44e077090d83b2f156d81da0a4  Neonote-v1.0.3
 1. Download the APK that matches your device. If unsure, choose `arm64-v8a` for a modern phone or `universal` for maximum compatibility.
 2. Allow installation from your browser/file manager when Android asks. The current test builds are debug-signed, so Play Protect may show a warning.
 3. Open the APK and install it.
-4. Optional: install through ADB with `adb install -r Neonote-1.0.3-arm64-v8a.apk`.
+4. Optional: install through ADB with `adb install -r Neonote-1.0.4-arm64-v8a.apk`.
 
 Minimum Android version is `minSdk 24` (Android 7.0+); the current release targets Android 16 / API 36.
 
@@ -272,40 +272,40 @@ Neonote 是一款以 Android 为主、坚持本地优先的 Flutter 创作型笔
 
 ### 下载
 
-当前版本：**v1.0.3**。
+当前版本：**v1.0.4**。
 
 | 安装包 | 适用设备 | GitHub 官方下载 | 备用镜像 |
 | --- | --- | --- | --- |
-| `arm64-v8a` | 大多数现代 Android 手机 | [下载](https://github.com/A1straowo/Neonote/releases/download/v1.0.3/Neonote-1.0.3-arm64-v8a.apk) | [镜像](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-arm64-v8a.apk) |
-| `armeabi-v7a` | 较老的 32 位 Android 设备 | [下载](https://github.com/A1straowo/Neonote/releases/download/v1.0.3/Neonote-1.0.3-armeabi-v7a.apk) | [镜像](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-armeabi-v7a.apk) |
-| `x86_64` | Android 模拟器和 x86_64 设备 | [下载](https://github.com/A1straowo/Neonote/releases/download/v1.0.3/Neonote-1.0.3-x86_64.apk) | [镜像](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-x86_64.apk) |
-| `universal` | 通用兼容版（文件最大） | [下载](https://github.com/A1straowo/Neonote/releases/download/v1.0.3/Neonote-1.0.3-universal.apk) | [镜像](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-universal.apk) |
+| `arm64-v8a` | 大多数现代 Android 手机 | [下载](https://github.com/A1straowo/Neonote/releases/download/v1.0.4/Neonote-1.0.4-arm64-v8a.apk) | [镜像](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-arm64-v8a.apk) |
+| `armeabi-v7a` | 较老的 32 位 Android 设备 | [下载](https://github.com/A1straowo/Neonote/releases/download/v1.0.4/Neonote-1.0.4-armeabi-v7a.apk) | [镜像](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-armeabi-v7a.apk) |
+| `x86_64` | Android 模拟器和 x86_64 设备 | [下载](https://github.com/A1straowo/Neonote/releases/download/v1.0.4/Neonote-1.0.4-x86_64.apk) | [镜像](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-x86_64.apk) |
+| `universal` | 通用兼容版（文件最大） | [下载](https://github.com/A1straowo/Neonote/releases/download/v1.0.4/Neonote-1.0.4-universal.apk) | [镜像](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-universal.apk) |
 
 **下载入口：** [GitHub Releases](https://github.com/A1straowo/Neonote/releases/latest) · [GitHub Pages 备用镜像](https://a1straowo.github.io/Neonote/) · [SHA256SUMS.txt](https://a1straowo.github.io/Neonote/SHA256SUMS.txt)
 
 > 如果 `github.com` 打不开或下载很慢，请直接使用 GitHub Pages 镜像。镜像提供与 Release 相同的 APK 和校验文件。
 
 <details>
-<summary><strong>v1.0.3 SHA-256 校验值</strong></summary>
+<summary><strong>v1.0.4 SHA-256 校验值</strong></summary>
 
 GitHub Release 与备用镜像分别打包，文件名和校验值不同。请根据实际下载来源核对对应列表。
 
-**GitHub Release（`Neonote-1.0.3-...`）**
+**GitHub Release（`Neonote-1.0.4-...`）**
 
 ```text
-e9142e4f97002766ffe0a0b321cc85c60127a5415b1c39a10188d2f1ddf98e7a  Neonote-1.0.3-arm64-v8a.apk
-5d8b134ca4b8d676e43d238d232ef4dc3c829dec4b46cdfa6f0114f752434d48  Neonote-1.0.3-armeabi-v7a.apk
-87af4063ee7dcbabd87acac2929a8a81de7da6d887ac6ef20e12350a9a4c5b7d  Neonote-1.0.3-x86_64.apk
-9532c1be8369e9ca31f34001577e0b024487b894e4ee3688bffb655681a2120a  Neonote-1.0.3-universal.apk
+93b21eb9a3481fe932de17844e0908e8baed20c610af230a80731eea0c1f0ef5  Neonote-1.0.4-arm64-v8a.apk
+1423f2afcd1d54509122a659f40a31cc75f7dc50724d221ef7ae93d0410b9323  Neonote-1.0.4-armeabi-v7a.apk
+5e47965b44f5c6d6c0b8b36254d53fc335badc5b64b96241923bd85e289d0391  Neonote-1.0.4-x86_64.apk
+2ca08a7aa2a57a3c49df019aeee9497c1f481f5cf7a1da525b00499fda4811d2  Neonote-1.0.4-universal.apk
 ```
 
-**GitHub Pages 备用镜像（`Neonote-v1.0.3-...`）**
+**GitHub Pages 备用镜像（`Neonote-v1.0.4-...`）**
 
 ```text
-c541a045d02aab19fab7c9c6e1260a4e3f541a4c47866339f16abfc7c70ba10f  Neonote-v1.0.3-arm64-v8a.apk
-98acaa162dd647df0ae304dabf6f7fb0825a7ad371548e34c251850ade6ef2f5  Neonote-v1.0.3-armeabi-v7a.apk
-015308f7ab69c6c3d15a9c78b5255003414e9e6544eea4c50cff6dbd0a9af919  Neonote-v1.0.3-x86_64.apk
-cc3be60fd5d7685f4f7654e864e70123cf636f44e077090d83b2f156d81da0a4  Neonote-v1.0.3-universal.apk
+2fc6d73d51a59b9f657dccf4d94eccc31a1f0a12ac549cff499904ba9318d15d  Neonote-v1.0.4-arm64-v8a.apk
+edb755b75b0464b280677b17cb0adfdf56d8866fe1a11b97e1f67d80602fa892  Neonote-v1.0.4-armeabi-v7a.apk
+ea62d89f4af97f41193fde2c68b0a65a03e553180a5c07b56dcf021477683b65  Neonote-v1.0.4-x86_64.apk
+5c57a8edeaa121fdd978d1b5887c25c28e78a597c5d5b1f83ec7bd2828a68192  Neonote-v1.0.4-universal.apk
 ```
 
 </details>
@@ -315,7 +315,7 @@ cc3be60fd5d7685f4f7654e864e70123cf636f44e077090d83b2f156d81da0a4  Neonote-v1.0.3
 1. 根据设备架构下载 APK。不确定时优先选 `arm64-v8a`，或使用兼容性最好的 `universal`。
 2. 按 Android 提示允许浏览器或文件管理器安装未知来源应用。当前测试包使用 Android 调试证书签名，系统可能显示安全提醒。
 3. 打开 APK 完成安装。
-4. 也可以使用 ADB：`adb install -r Neonote-1.0.3-arm64-v8a.apk`。
+4. 也可以使用 ADB：`adb install -r Neonote-1.0.4-arm64-v8a.apk`。
 
 ### 配置 AI
 
@@ -414,11 +414,11 @@ Neonote は、Flutter で作られた Android ファースト・ローカルフ�
 
 ### ダウンロード
 
-最新版は **v1.0.3** です。通常は `arm64-v8a`、互換性重視なら `universal` を選んでください。
+最新版は **v1.0.4** です。通常は `arm64-v8a`、互換性重視なら `universal` を選んでください。
 
 - [GitHub Releases（公式）](https://github.com/A1straowo/Neonote/releases/latest)
 - **GitHub が利用できない場合の公式ミラー：<https://a1straowo.github.io/Neonote/>**
-- [arm64-v8a ミラー](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-arm64-v8a.apk) · [armeabi-v7a ミラー](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-armeabi-v7a.apk) · [x86_64 ミラー](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-x86_64.apk) · [universal ミラー](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-universal.apk)
+- [arm64-v8a ミラー](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-arm64-v8a.apk) · [armeabi-v7a ミラー](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-armeabi-v7a.apk) · [x86_64 ミラー](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-x86_64.apk) · [universal ミラー](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-universal.apk)
 - [SHA256SUMS.txt](https://a1straowo.github.io/Neonote/SHA256SUMS.txt)
 
 > 現在の APK はテスト用の Android デバッグ証明書で署名されています。本番配布時は私有の release keystore で再署名してください。
@@ -462,11 +462,11 @@ Neonote는 Flutter로 만든 Android 우선·로컬 우선 노트 앱입니다. 
 
 ### 다운로드
 
-최신 버전은 **v1.0.3**입니다. 대부분의 최신 휴대폰에는 `arm64-v8a`, 최대 호환성이 필요하면 `universal`을 선택하세요.
+최신 버전은 **v1.0.4**입니다. 대부분의 최신 휴대폰에는 `arm64-v8a`, 최대 호환성이 필요하면 `universal`을 선택하세요.
 
 - [GitHub Releases(공식)](https://github.com/A1straowo/Neonote/releases/latest)
 - **GitHub 다운로드가 안 될 때 공식 미러: <https://a1straowo.github.io/Neonote/>**
-- [arm64-v8a 미러](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-arm64-v8a.apk) · [armeabi-v7a 미러](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-armeabi-v7a.apk) · [x86_64 미러](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-x86_64.apk) · [universal 미러](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-universal.apk)
+- [arm64-v8a 미러](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-arm64-v8a.apk) · [armeabi-v7a 미러](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-armeabi-v7a.apk) · [x86_64 미러](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-x86_64.apk) · [universal 미러](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-universal.apk)
 - [SHA256SUMS.txt](https://a1straowo.github.io/Neonote/SHA256SUMS.txt)
 
 > 현재 APK는 테스트용 Android 디버그 키로 서명되어 있습니다. 실제 배포 시에는 비공개 release keystore로 다시 서명해야 합니다.
@@ -510,11 +510,11 @@ Neonote es una aplicación de notas para Android, creada con Flutter y diseñada
 
 ### Descarga
 
-La versión más reciente es **v1.0.3**. Para la mayoría de teléfonos modernos elige `arm64-v8a`; para máxima compatibilidad usa `universal`.
+La versión más reciente es **v1.0.4**. Para la mayoría de teléfonos modernos elige `arm64-v8a`; para máxima compatibilidad usa `universal`.
 
 - [GitHub Releases (oficial)](https://github.com/A1straowo/Neonote/releases/latest)
 - **Espejo oficial si GitHub no está disponible: <https://a1straowo.github.io/Neonote/>**
-- [Espejo arm64-v8a](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-arm64-v8a.apk) · [Espejo armeabi-v7a](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-armeabi-v7a.apk) · [Espejo x86_64](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-x86_64.apk) · [Espejo universal](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-universal.apk)
+- [Espejo arm64-v8a](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-arm64-v8a.apk) · [Espejo armeabi-v7a](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-armeabi-v7a.apk) · [Espejo x86_64](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-x86_64.apk) · [Espejo universal](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-universal.apk)
 - [SHA256SUMS.txt](https://a1straowo.github.io/Neonote/SHA256SUMS.txt)
 
 > Los APK actuales están firmados con la clave de depuración de Android para pruebas. Para una distribución de producción, vuelve a firmarlos con un keystore privado.
@@ -558,11 +558,11 @@ Neonote — приложение для заметок под Android, созд�
 
 ### Загрузка
 
-Актуальная версия — **v1.0.3**. Для большинства современных телефонов подойдёт `arm64-v8a`, для максимальной совместимости — `universal`.
+Актуальная версия — **v1.0.4**. Для большинства современных телефонов подойдёт `arm64-v8a`, для максимальной совместимости — `universal`.
 
 - [GitHub Releases (официально)](https://github.com/A1straowo/Neonote/releases/latest)
 - **Официальное зеркало, если GitHub недоступен: <https://a1straowo.github.io/Neonote/>**
-- [Зеркало arm64-v8a](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-arm64-v8a.apk) · [Зеркало armeabi-v7a](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-armeabi-v7a.apk) · [Зеркало x86_64](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-x86_64.apk) · [Зеркало universal](https://a1straowo.github.io/Neonote/Neonote-v1.0.3-universal.apk)
+- [Зеркало arm64-v8a](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-arm64-v8a.apk) · [Зеркало armeabi-v7a](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-armeabi-v7a.apk) · [Зеркало x86_64](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-x86_64.apk) · [Зеркало universal](https://a1straowo.github.io/Neonote/Neonote-v1.0.4-universal.apk)
 - [SHA256SUMS.txt](https://a1straowo.github.io/Neonote/SHA256SUMS.txt)
 
 > Текущие APK подписаны отладочным ключом Android и предназначены для тестирования. Для производственной раздачи подпишите сборку собственным закрытым release keystore.
