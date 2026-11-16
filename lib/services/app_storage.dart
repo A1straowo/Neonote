@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:neonote/services/student_avatar_cache.dart';
 import 'package:neonote/store/note_store.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -69,9 +70,12 @@ class AppStorage {
 
     final cacheDirectory = await _guard(getApplicationCacheDirectory);
     final temporaryDirectory = await _guard(getTemporaryDirectory);
+    final avatarCacheDirectory = await StudentAvatarCache.instance
+        .cacheDirectory();
     final cacheRoots = _uniqueRoots(<String>[
       ?cacheDirectory?.path,
       ?temporaryDirectory?.path,
+      ?avatarCacheDirectory?.path,
     ]);
     for (final path in cacheRoots) {
       cache += await _directorySize(path);
@@ -81,6 +85,7 @@ class AppStorage {
   }
 
   static Future<void> clearCache() async {
+    await StudentAvatarCache.instance.clear();
     final cacheDirectory = await _guard(getApplicationCacheDirectory);
     if (cacheDirectory != null) await _clearDirectory(cacheDirectory.path);
     final temporaryDirectory = await _guard(getTemporaryDirectory);

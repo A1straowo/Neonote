@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
@@ -26,6 +27,7 @@ class StudentAvatarCache {
   static const int _jpegQuality = 82;
   static const int _maxCacheEntries = 200;
   static const int _maxCacheBytes = 24 * 1024 * 1024;
+  static const int _maxDownloadBytes = 8 * 1024 * 1024;
 
   final Future<Directory> Function() _directoryProvider;
   final http.Client _client;
@@ -39,6 +41,30 @@ class StudentAvatarCache {
       await directory.create(recursive: true);
     }
     return directory;
+  }
+
+  /// Returns the directory used for persistent avatar files.
+  ///
+  /// Storage accounting and "clear cache" use this to include avatar files in
+  /// cache totals instead of silently leaving them behind.
+  Future<Directory?> cacheDirectory() async {
+    try {
+      return await _directoryProvider();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> clear() async {
+    try {
+      final directory = await _directoryProvider();
+      if (!await directory.exists()) return;
+      await for (final entity in directory.list()) {
+        try {
+          await entity.delete(recursive: true);
+        } catch (_) {}
+      }
+    } catch (_) {}
   }
 
   String _normalize(String raw) {
@@ -95,19 +121,32 @@ class StudentAvatarCache {
 
   Future<File?> _download(String url, File target) async {
     try {
+      final request = http.Request('GET', Uri.parse(url))
+        ..headers.addAll(const <String, String>{
+          'User-Agent': 'Neonote/1.0 (Flutter)',
+          'Accept': 'image/*',
+        });
       final response = await _client
-          .get(
-            Uri.parse(url),
-            headers: const <String, String>{
-              'User-Agent': 'Neonote/1.0 (Flutter)',
-              'Accept': 'image/*',
-            },
-          )
+          .send(request)
           .timeout(const Duration(seconds: 20));
       if (response.statusCode < 200 || response.statusCode >= 300) {
         return null;
       }
-      final bytes = response.bodyBytes;
+      if (response.contentLength != null &&
+          response.contentLength! > _maxDownloadBytes) {
+        return null;
+      }
+
+      final bytesBuilder = BytesBuilder(copy: false);
+      var receivedBytes = 0;
+      await for (final chunk in response.stream.timeout(
+        const Duration(seconds: 20),
+      )) {
+        receivedBytes += chunk.length;
+        if (receivedBytes > _maxDownloadBytes) return null;
+        bytesBuilder.add(chunk);
+      }
+      final bytes = bytesBuilder.takeBytes();
       if (bytes.isEmpty) return null;
 
       final decoded = img.decodeImage(bytes);
@@ -151,9 +190,18 @@ class StudentAvatarCache {
         final name = p.basename(file.path);
         final isLegacy = name.endsWith('.img');
         final isTemp = name.endsWith('.tmp');
-        if (isLegacy || isTemp) {
+        if (isLegacy) {
           try {
             await file.delete();
+          } catch (_) {}
+          continue;
+        }
+        if (isTemp) {
+          // Another avatar download may still be writing this file. Only
+          // remove temp files that have clearly been abandoned.
+          try {
+            final age = DateTime.now().difference(file.statSync().modified);
+            if (age > const Duration(hours: 1)) await file.delete();
           } catch (_) {}
           continue;
         }

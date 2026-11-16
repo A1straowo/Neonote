@@ -74,9 +74,13 @@ void main() {
         '${tempDirectory.path}/legacy_$i.img',
       ).writeAsBytes(const <int>[1, 2, 3]);
     }
-    await File(
-      '${tempDirectory.path}/partial.tmp',
-    ).writeAsBytes(const <int>[1]);
+    final freshTemp = File('${tempDirectory.path}/fresh.tmp');
+    await freshTemp.writeAsBytes(const <int>[1]);
+    final staleTemp = File('${tempDirectory.path}/stale.tmp');
+    await staleTemp.writeAsBytes(const <int>[1]);
+    staleTemp.setLastModifiedSync(
+      DateTime.now().subtract(const Duration(hours: 2)),
+    );
     for (var i = 0; i < 210; i++) {
       await File(
         '${tempDirectory.path}/avatar_${i}_v2.jpg',
@@ -90,8 +94,42 @@ void main() {
     await cache.resolve('https://example.com/missing.png');
 
     final files = tempDirectory.listSync().whereType<File>().toList();
-    expect(files.length, lessThanOrEqualTo(200));
+    final liveFiles = files
+        .where((file) => file.path.endsWith('_v2.jpg'))
+        .toList();
+    expect(liveFiles.length, lessThanOrEqualTo(200));
     expect(files.where((file) => file.path.endsWith('.img')), isEmpty);
-    expect(files.where((file) => file.path.endsWith('.tmp')), isEmpty);
+    expect(freshTemp.existsSync(), isTrue);
+    expect(staleTemp.existsSync(), isFalse);
+  });
+
+  test('avatar cache rejects oversized downloads', () async {
+    final cache = StudentAvatarCache(
+      directoryProvider: () async => tempDirectory,
+      client: MockClient(
+        (_) async => http.Response.bytes(
+          List<int>.filled(9 * 1024 * 1024, 1),
+          200,
+          headers: const <String, String>{'content-type': 'image/jpeg'},
+        ),
+      ),
+    );
+
+    final file = await cache.resolve('https://example.com/huge.jpg');
+    expect(file, isNull);
+    expect(tempDirectory.listSync().whereType<File>(), isEmpty);
+  });
+
+  test('avatar cache clear removes cached files', () async {
+    await File(
+      '${tempDirectory.path}/avatar_v2.jpg',
+    ).writeAsBytes(const <int>[1, 2, 3]);
+    final cache = StudentAvatarCache(
+      directoryProvider: () async => tempDirectory,
+      client: MockClient((_) async => http.Response('', 404)),
+    );
+
+    await cache.clear();
+    expect(tempDirectory.listSync().whereType<File>(), isEmpty);
   });
 }
