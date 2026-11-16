@@ -394,6 +394,70 @@ void main() {
     provider.dispose();
   });
 
+  testWidgets('note text undo and redo restore document snapshots', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap(const Scaffold(body: NoteEditorView())));
+    await _pump(tester);
+
+    await tester.tap(find.byIcon(Icons.add).first);
+    await _pump(tester);
+    await tester.tap(find.text('文本'));
+    await _pump(tester);
+
+    await tester.enterText(find.byType(TextField).last, '撤销测试');
+    await _pump(tester);
+    expect(
+      tester.widget<TextField>(find.byType(TextField).last).controller!.text,
+      '撤销测试',
+    );
+
+    await tester.tap(find.byIcon(Icons.undo));
+    await _pump(tester);
+    expect(
+      tester.widget<TextField>(find.byType(TextField).last).controller!.text,
+      isEmpty,
+    );
+
+    await tester.tap(find.byIcon(Icons.redo));
+    await _pump(tester);
+    expect(
+      tester.widget<TextField>(find.byType(TextField).last).controller!.text,
+      '撤销测试',
+    );
+  });
+
+  testWidgets('note secondary toolbars stay arranged on a compact screen', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 1920);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(_wrap(const Scaffold(body: NoteEditorView())));
+    await _pump(tester);
+    await tester.tap(find.byIcon(Icons.add).first);
+    await _pump(tester);
+    await tester.tap(find.text('文本'));
+    await _pump(tester);
+
+    await tester.tap(find.byIcon(Icons.add_box_outlined));
+    await _pump(tester);
+    for (final label in ['插入清单项', '绘图', '添加图片', '录制音频', '插入分隔线', '插入当前时间']) {
+      expect(find.text(label), findsOneWidget);
+    }
+    expect(tester.takeException(), isNull);
+
+    await tester.tap(find.byIcon(Icons.text_fields));
+    await _pump(tester);
+    expect(find.byIcon(Icons.format_bold), findsOneWidget);
+    expect(find.byIcon(Icons.format_align_center), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('drawer "+" creates a label without breaking other tiles', (
     tester,
   ) async {

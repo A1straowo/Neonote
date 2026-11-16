@@ -574,6 +574,29 @@ class _TextNoteSnapshot {
     }
     return bytes;
   }
+
+  bool sameData(_TextNoteSnapshot other) => _deepDataEquals(data, other.data);
+}
+
+bool _deepDataEquals(Object? left, Object? right) {
+  if (identical(left, right)) return true;
+  if (left is Map && right is Map) {
+    if (left.length != right.length) return false;
+    for (final key in left.keys) {
+      if (!right.containsKey(key) || !_deepDataEquals(left[key], right[key])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  if (left is List && right is List) {
+    if (left.length != right.length) return false;
+    for (var i = 0; i < left.length; i++) {
+      if (!_deepDataEquals(left[i], right[i])) return false;
+    }
+    return true;
+  }
+  return left == right;
 }
 
 class _EditableTextBlock {
@@ -1248,7 +1271,13 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
     ];
     _refreshWordCount();
     widget.onChanged();
-    if (!_historySuspended) _scheduleHistoryCommit();
+    if (!_historySuspended) {
+      if (_redoStack.isNotEmpty) {
+        _clearRedo();
+        if (mounted) setState(() {});
+      }
+      _scheduleHistoryCommit();
+    }
   }
 
   _TextNoteSnapshot _captureSnapshot() => _TextNoteSnapshot({
@@ -1288,11 +1317,13 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
   // PERF HOTFIX: input events only restart a timer. The full document is
   // captured at most once per 650 ms pause instead of on every keystroke.
   void _scheduleHistoryCommit() {
+    final wasCanUndo = _canUndo;
     _perfHistoryDebounce?.cancel();
     _perfHistoryDebounce = Timer(const Duration(milliseconds: 650), () {
       _perfHistoryDebounce = null;
       _commitHistory();
     });
+    if (!wasCanUndo && mounted) setState(() {});
   }
 
   void _commitHistory() {
@@ -1300,6 +1331,10 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
     final current = _captureSnapshot();
     final previous = _historyCurrent;
     if (previous == null) {
+      _historyCurrent = current;
+      return;
+    }
+    if (previous.sameData(current)) {
       _historyCurrent = current;
       return;
     }
@@ -2709,21 +2744,25 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
       required String label,
       required IconData icon,
       required VoidCallback onPressed,
+      required double width,
     }) {
       return SizedBox(
-        width: DeviceInfo.pt(108),
+        width: width,
+        height: DeviceInfo.pt(38),
         child: TextButton.icon(
           onPressed: onPressed,
           style: TextButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: DeviceInfo.pt(4)),
+            padding: EdgeInsets.symmetric(horizontal: DeviceInfo.pt(3)),
             visualDensity: VisualDensity.compact,
             foregroundColor: foreground,
           ),
-          icon: Icon(icon, size: 18),
+          icon: Icon(icon, size: 17),
           label: FittedBox(
             fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
             child: Text(
               label,
+              maxLines: 1,
               style: const TextStyle(fontFamily: 'ResourceHanCN', fontSize: 11),
             ),
           ),
@@ -2731,42 +2770,61 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
       );
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          insertButton(
-            label: _l10n.insert_checklist_item,
-            icon: Icons.check_box_outlined,
-            onPressed: _insertChecklist,
-          ),
-          insertButton(
-            label: _l10n.component_drawing,
-            icon: Icons.brush_outlined,
-            onPressed: _insertDrawingBlock,
-          ),
-          insertButton(
-            label: _l10n.add_image,
-            icon: Icons.image_outlined,
-            onPressed: _insertImageBlock,
-          ),
-          insertButton(
-            label: _recordingAudio ? _l10n.stop_recording : _l10n.record_audio,
-            icon: _recordingAudio ? Icons.stop_circle : Icons.mic_none,
-            onPressed: _toggleAudioRecording,
-          ),
-          insertButton(
-            label: _l10n.insert_divider,
-            icon: Icons.horizontal_rule,
-            onPressed: _insertDivider,
-          ),
-          insertButton(
-            label: _l10n.insert_current_time,
-            icon: Icons.schedule_outlined,
-            onPressed: _insertTime,
-          ),
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 4.0;
+        final width = constraints.maxWidth;
+        final columns = (width / DeviceInfo.pt(104))
+            .floor()
+            .clamp(2, 6)
+            .toInt();
+        final buttonWidth = (width - spacing * (columns - 1)) / columns;
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          alignment: WrapAlignment.center,
+          children: [
+            insertButton(
+              width: buttonWidth,
+              label: _l10n.insert_checklist_item,
+              icon: Icons.check_box_outlined,
+              onPressed: _insertChecklist,
+            ),
+            insertButton(
+              width: buttonWidth,
+              label: _l10n.component_drawing,
+              icon: Icons.brush_outlined,
+              onPressed: _insertDrawingBlock,
+            ),
+            insertButton(
+              width: buttonWidth,
+              label: _l10n.add_image,
+              icon: Icons.image_outlined,
+              onPressed: _insertImageBlock,
+            ),
+            insertButton(
+              width: buttonWidth,
+              label: _recordingAudio
+                  ? _l10n.stop_recording
+                  : _l10n.record_audio,
+              icon: _recordingAudio ? Icons.stop_circle : Icons.mic_none,
+              onPressed: _toggleAudioRecording,
+            ),
+            insertButton(
+              width: buttonWidth,
+              label: _l10n.insert_divider,
+              icon: Icons.horizontal_rule,
+              onPressed: _insertDivider,
+            ),
+            insertButton(
+              width: buttonWidth,
+              label: _l10n.insert_current_time,
+              icon: Icons.schedule_outlined,
+              onPressed: _insertTime,
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -2778,40 +2836,53 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
       VoidCallback onPressed, {
       String? tooltip,
       String? label,
+      required double width,
     }) {
-      return IconButton(
-        tooltip: tooltip,
-        onPressed: onPressed,
-        style: IconButton.styleFrom(
-          backgroundColor: selected
-              ? foreground.withValues(alpha: 0.16)
-              : Colors.transparent,
-          foregroundColor: foreground,
-          visualDensity: VisualDensity.compact,
-        ),
-        icon: label == null
-            ? Icon(icon, size: 20)
-            : Text(
-                label,
-                style: TextStyle(
-                  fontFamily: 'ResourceHanCN',
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  fontSize: 14,
+      return SizedBox(
+        width: width,
+        height: DeviceInfo.pt(36),
+        child: IconButton(
+          tooltip: tooltip,
+          onPressed: onPressed,
+          padding: EdgeInsets.zero,
+          style: IconButton.styleFrom(
+            backgroundColor: selected
+                ? foreground.withValues(alpha: 0.16)
+                : Colors.transparent,
+            foregroundColor: foreground,
+            visualDensity: VisualDensity.compact,
+          ),
+          icon: label == null
+              ? Icon(icon, size: 19)
+              : Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: 'ResourceHanCN',
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
+        ),
       );
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 2.0;
+        final width = constraints.maxWidth;
+        final columns = (width / DeviceInfo.pt(38))
+            .floor()
+            .clamp(4, 11)
+            .toInt();
+        final itemWidth = (width - spacing * (columns - 1)) / columns;
+        final items = <Widget>[
           toggle(
             Icons.title,
             block?.fontSize == 26,
             () => _setFontSize(26),
             tooltip: 'H1',
             label: 'H1',
+            width: itemWidth,
           ),
           toggle(
             Icons.title,
@@ -2819,6 +2890,7 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
             () => _setFontSize(21),
             tooltip: 'H2',
             label: 'H2',
+            width: itemWidth,
           ),
           toggle(
             Icons.text_fields,
@@ -2826,36 +2898,47 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
             () => _setFontSize(16),
             tooltip: _l10n.body_text,
             label: 'Aa',
+            width: itemWidth,
           ),
-          SizedBox(
-            height: 28,
-            child: VerticalDivider(
-              width: 16,
-              color: foreground.withValues(alpha: 0.18),
-            ),
+          toggle(
+            Icons.format_bold,
+            block?.bold ?? false,
+            () {
+              _applyToActiveSentence((value) => value.bold = !value.bold);
+            },
+            tooltip: _l10n.bold,
+            width: itemWidth,
           ),
-          toggle(Icons.format_bold, block?.bold ?? false, () {
-            _applyToActiveSentence((value) => value.bold = !value.bold);
-          }, tooltip: _l10n.bold),
-          toggle(Icons.format_italic, block?.italic ?? false, () {
-            _applyToActiveSentence((value) => value.italic = !value.italic);
-          }, tooltip: _l10n.italic),
-          toggle(Icons.format_underline, block?.underline ?? false, () {
-            _applyToActiveSentence(
-              (value) => value.underline = !value.underline,
-            );
-          }, tooltip: _l10n.underline),
-          toggle(Icons.format_strikethrough, block?.strikethrough ?? false, () {
-            _applyToActiveSentence((value) {
-              value.strikethrough = !value.strikethrough;
-            });
-          }, tooltip: _l10n.strikethrough),
-          SizedBox(
-            height: 28,
-            child: VerticalDivider(
-              width: 16,
-              color: foreground.withValues(alpha: 0.18),
-            ),
+          toggle(
+            Icons.format_italic,
+            block?.italic ?? false,
+            () {
+              _applyToActiveSentence((value) => value.italic = !value.italic);
+            },
+            tooltip: _l10n.italic,
+            width: itemWidth,
+          ),
+          toggle(
+            Icons.format_underline,
+            block?.underline ?? false,
+            () {
+              _applyToActiveSentence(
+                (value) => value.underline = !value.underline,
+              );
+            },
+            tooltip: _l10n.underline,
+            width: itemWidth,
+          ),
+          toggle(
+            Icons.format_strikethrough,
+            block?.strikethrough ?? false,
+            () {
+              _applyToActiveSentence((value) {
+                value.strikethrough = !value.strikethrough;
+              });
+            },
+            tooltip: _l10n.strikethrough,
+            width: itemWidth,
           ),
           toggle(
             Icons.format_align_left,
@@ -2864,6 +2947,7 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
               _setAlignment(TextAlign.left);
             },
             tooltip: _l10n.align_left,
+            width: itemWidth,
           ),
           toggle(
             Icons.format_align_center,
@@ -2872,6 +2956,7 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
               _setAlignment(TextAlign.center);
             },
             tooltip: _l10n.align_center,
+            width: itemWidth,
           ),
           toggle(
             Icons.format_align_right,
@@ -2880,9 +2965,16 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
               _setAlignment(TextAlign.right);
             },
             tooltip: _l10n.align_right,
+            width: itemWidth,
           ),
-        ],
-      ),
+        ];
+        return Wrap(
+          spacing: spacing,
+          runSpacing: 2,
+          alignment: WrapAlignment.center,
+          children: items,
+        );
+      },
     );
   }
 
@@ -2928,8 +3020,11 @@ class _TextWorkbenchState extends State<_TextWorkbench> {
     final mediaPadding = MediaQuery.paddingOf(context);
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
     final topInset = mediaPadding.top + kToolbarHeight + DeviceInfo.pt(4);
+    final panelInset = _panel == _TextToolbarPanel.none
+        ? 0.0
+        : DeviceInfo.pt(96);
     final bottomInset =
-        mediaPadding.bottom + keyboardInset + DeviceInfo.pt(124);
+        mediaPadding.bottom + keyboardInset + panelInset + DeviceInfo.pt(124);
 
     return Stack(
       children: [
@@ -3130,9 +3225,9 @@ class _TextToolbar extends StatelessWidget {
                 children: [
                   if (activePanel != _TextToolbarPanel.none)
                     Container(
-                      height: 46,
                       padding: EdgeInsets.symmetric(
                         horizontal: DeviceInfo.pt(4),
+                        vertical: DeviceInfo.pt(4),
                       ),
                       decoration: BoxDecoration(
                         border: Border(
@@ -3141,7 +3236,15 @@ class _TextToolbar extends StatelessWidget {
                           ),
                         ),
                       ),
-                      child: secondary,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: math.min(
+                            132,
+                            MediaQuery.sizeOf(context).height * 0.28,
+                          ),
+                        ),
+                        child: SingleChildScrollView(child: secondary),
+                      ),
                     ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -3686,12 +3789,12 @@ class _DrawingWorkbenchState extends State<_DrawingWorkbench> {
           IconButton(
             tooltip: l10n.undo,
             icon: const Icon(Icons.undo),
-            onPressed: _undo,
+            onPressed: _undoStates.isEmpty ? null : _undo,
           ),
           IconButton(
             tooltip: l10n.redo,
             icon: const Icon(Icons.redo),
-            onPressed: _redoStroke,
+            onPressed: _redoStates.isEmpty ? null : _redoStroke,
           ),
           IconButton(
             tooltip: l10n.more,
